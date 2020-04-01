@@ -1,4 +1,4 @@
-# ao-kata
+# dahl-kata
 
 To try and encourage more sales of 5 different Roald Dahl books they sell, a bookshop has decided to offer discounts of multiple-book purchases.
 
