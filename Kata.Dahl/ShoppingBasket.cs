@@ -35,33 +35,36 @@ namespace Kata.Dahl
         {
             var totalPrice = decimal.Zero;
 
-            static bool HasValue(KeyValuePair<Book, int> x)
+            static bool ExistsAtLeastOneItem(KeyValuePair<Book, int> x)
             {
                 return x.Value > 0;
             }
 
             var discounts = discountRepository.GetDiscounts();
-            foreach (var (discountPercentage, differentItemCount) in discounts)
+            if (discounts != null)
             {
-                while (scannedBooks.Count(HasValue) >= differentItemCount)
+                foreach (var (discountPercentage, differentItemCount) in discounts)
                 {
-                    var firstSetOfDiscountedBooks = 
-                        scannedBooks.Where(HasValue)
-                            .Take(differentItemCount)
-                            .Select(x => x.Key).ToList();
-                    var price = firstSetOfDiscountedBooks.Sum(x => x.Price);
-                    totalPrice += price - price * discountPercentage;
-                    
-                    foreach (var book in firstSetOfDiscountedBooks)
+                    while (scannedBooks.Count(ExistsAtLeastOneItem) >= differentItemCount)
                     {
-                        var bookCount = scannedBooks[book];
-                        scannedBooks.Remove(book);
-                        scannedBooks.Add(book, bookCount-1);
+                        var firstSetOfDiscountedBooks =
+                            scannedBooks.Where(ExistsAtLeastOneItem)
+                                .Take(differentItemCount)
+                                .Select(x => x.Key).ToList();
+                        var price = firstSetOfDiscountedBooks.Sum(x => x.Price);
+                        totalPrice += price - price * discountPercentage;
+
+                        foreach (var book in firstSetOfDiscountedBooks)
+                        {
+                            var bookCount = scannedBooks[book];
+                            scannedBooks.Remove(book);
+                            scannedBooks.Add(book, bookCount - 1);
+                        }
                     }
                 }
             }
 
-            foreach (var (book, count) in scannedBooks.Where(HasValue))
+            foreach (var (book, count) in scannedBooks.Where(ExistsAtLeastOneItem))
             {
                 totalPrice += count * book.Price;
             }
